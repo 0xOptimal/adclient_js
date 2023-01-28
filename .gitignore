@@ -4,3 +4,4 @@
 .ropeproject/
 *.pyc
 dist/
+.vscode/
