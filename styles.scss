@@ -1,0 +1,446 @@
+/* Ad styles */
+
+// Sizes
+$width-image-horizontal: 320px;
+$width-image-vertical: 180px;
+
+// Z-index used to ensure these custom ad styles are above the main content.
+// but below most modals
+$zindex-styles: 10;
+
+// Breakpoints (used for stickybox/fixedfooter formats)
+$breakpoint-ultrawide: 1300px;
+$breakpoint-mobile: 576px;
+
+// Colors
+$color-background: rgba(0, 0, 0, 0.03);
+$color-background-dark: rgba(255, 255, 255, 0.05);
+$color-link: rgb(80, 80, 80);
+$color-link-callout: lighten($color-link, 10%);
+$color-link-bold: #088cdb;
+$color-link-dark: rgb(220, 220, 220);  // gainsboro
+$color-link-callout-dark: darken($color-link-dark, 10%);
+$color-link-bold-dark: lighten($color-link-bold, 20%);
+$color-bg-stickybox: $color-link-dark;
+$color-bg-dark-stickybox: $color-link;
+
+// Utilities, mostly to reduce file size
+@mixin links($color-primary, $color-secondary, $color-highlight) {
+  a {
+    &:link {
+      color: $color-primary;
+    }
+    &:visited {
+      color: $color-primary;
+    }
+    &:hover {
+      color: $color-secondary;
+    }
+    &:active {
+      color: $color-secondary;
+    }
+    strong,
+    b {
+      color: $color-highlight;
+    }
+  }
+}
+
+// Common styles default to most themes
+[optimal-publisher].loaded,
+[optimal-type].loaded {
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: 0px;
+  vertical-align: baseline;
+  line-height: 1.3em;
+
+  a {
+    text-decoration: none;
+  }
+
+  .optimal-pixel {
+    display: none;
+  }
+
+  .optimal-content {
+    margin: 1em 1em 0.5em 1em;
+    padding: 1em;
+
+    background: $color-background;
+    color: $color-link;
+
+    @include links($color-link, darken($color-link, 10%), $color-link-bold);
+  }
+  .optimal-callout {
+    @include links(
+      $color-link-callout,
+      darken($color-link-callout, 10%),
+      $color-link-bold
+    );
+    a {
+      font-size: 0.8em;
+    }
+  }
+
+  &.dark {
+    .optimal-content {
+      background: $color-background-dark;
+      color: $color-link-dark;
+      @include links(
+        $color-link-dark,
+        lighten($color-link-dark, 10%),
+        $color-link-bold-dark
+      );
+    }
+
+    .optimal-callout {
+      @include links(
+        $color-link-callout-dark,
+        lighten($color-link-callout-dark, 10%),
+        $color-link-bold-dark
+      );
+    }
+  }
+
+  &.adaptive {
+    // For adaptive color schemes, the default is light
+    // TODO: Find a way to reuse these definitions from dark class above
+    @media (prefers-color-scheme: dark) {
+      .optimal-content {
+        background: $color-background-dark;
+        color: $color-link-dark;
+        @include links(
+          $color-link-dark,
+          lighten($color-link-dark, 10%),
+          $color-link-bold-dark
+        );
+      }
+
+      .optimal-callout {
+        @include links(
+          $color-link-callout-dark,
+          lighten($color-link-callout-dark, 10%),
+          $color-link-bold-dark
+        );
+      }
+    }
+  }
+}
+
+// Themes
+@mixin theme-flat {
+  .optimal-content {
+    border: 0px;
+    border-radius: 3px;
+    box-shadow: none;
+  }
+}
+
+@mixin theme-raised {
+  .optimal-content {
+    border: 0px;
+    border-radius: 3px;
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@mixin theme-bordered {
+  .optimal-content {
+    border: 1px solid opacify($color-background, 0.01);
+    border-radius: 3px;
+    box-shadow: none;
+  }
+  &.dark .optimal-content {
+    border: 1px solid opacify($color-background-dark, 0.02);
+  }
+
+  &.adaptive {
+    @media (prefers-color-scheme: dark) {
+      .optimal-content {
+        border: 1px solid opacify($color-background-dark, 0.02);
+      }
+    }
+  }
+}
+
+[optimal-publisher].loaded,
+[optimal-type].loaded {
+  @include theme-raised;
+
+  &.raised {
+    @include theme-raised;
+  }
+  &.bordered {
+    @include theme-bordered;
+  }
+  &.flat {
+    @include theme-flat;
+  }
+}
+
+// Image placement
+// -------------------------------------------------------------------------
+// Explicit image ad type, or default image ad type not specified
+// https://ethical-ad-client.readthedocs.io/en/latest/#image-placement
+[optimal-type="image"].loaded,
+[optimal-publisher]:not([optimal-type]).loaded,
+.optimal-type-image {
+  display: inline-block;
+
+  .optimal-content {
+    // max-width: $width-image-vertical;
+    overflow: auto;
+
+    text-align: center;
+
+    > a > img {
+      // width: 120px;
+      height: 90px;
+      display: inline-block;
+    }
+
+    > .optimal-text {
+      margin-top: 1em;
+      font-size: 1em;
+      text-align: center;
+    }
+  }
+
+  .optimal-callout {
+    max-width: $width-image-vertical;
+    margin: 0em 1em 1em 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    font-style: italic;
+    text-align: right;
+  }
+
+  &.horizontal {
+    .optimal-content {
+      max-width: $width-image-horizontal;
+
+      > a > img {
+        float: left;
+        margin-right: 1em;
+      }
+
+      .optimal-text {
+        margin-top: 0em;
+        text-align: left;
+        overflow: auto;
+      }
+    }
+
+    .optimal-callout {
+      max-width: $width-image-horizontal;
+      text-align: right;
+    }
+  }
+}
+
+
+// Text placement (text-only ad type)
+// -------------------------------------------------------------------------
+// https://ethical-ad-client.readthedocs.io/en/latest/#text-placement
+[optimal-type="text"].loaded,
+.optimal-type-text {
+  font-size: 14px;
+
+  .optimal-content {
+    text-align: left;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 3s ease infinite;
+    // height: 100vh;
+  }
+
+  .optimal-callout {
+    margin: 0.5em 1em 1em 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    text-align: right;
+    font-style: italic;
+  }
+}
+
+
+// Stickybox ad
+// -------------------------------------------------------------------------
+// The stickybox is an ad that is shown in a floating box in the lower right
+// on very wide screens or a standard image ad
+// (text-only not supported) on screens less wide.
+// https://ethical-ad-client.readthedocs.io/en/latest/#stickybox
+[optimal-style="stickybox"].loaded {
+  // The outer div containing optimal-publisher and optimal-type
+  // Needs to be positioned when using fixed positioning
+  // in order for viewport detection to function correctly.
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: $zindex-styles;
+
+  .optimal-type-image {
+    .optimal-stickybox-hide {
+      cursor: pointer;
+      position: absolute;
+      top: 0.75em;
+      right: 0.75em;
+
+      background-color: #fefefe;
+      border: 1px solid #088cdb;
+      border-radius: 50%;
+      color: #088cdb;
+      font-size: 1em;
+      text-align: center;
+      height: 1.5em;
+      width: 1.5em;
+      line-height: 1.5em;
+    }
+  }
+
+  @media (max-width: $breakpoint-ultrawide) {
+    position: static;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+
+    .optimal-stickybox-hide {
+      display: none;
+    }
+  }
+
+  // Our ads are normally partially transparent
+  // This doesn't work with floating ads
+  @media (min-width: $breakpoint-ultrawide ) { // + 1
+    .optimal-type-image .optimal-content {
+      background: $color-bg-stickybox;
+    }
+    &.dark .optimal-type-image .optimal-content {
+      background: $color-bg-dark-stickybox;
+    }
+    &.adaptive {
+      @media (prefers-color-scheme: dark) {
+        .optimal-type-image .optimal-content {
+          background: $color-bg-dark-stickybox;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+// FixedFooter ad
+// -------------------------------------------------------------------------
+// https://ethical-ad-client.readthedocs.io/en/latest/#fixedfooter
+[optimal-style="fixedfooter"].loaded {
+  // The outer div containing optimal-publisher and optimal-type
+  // Needs to be positioned when using fixed positioning
+  // in order for viewport detection to function correctly.
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: $zindex-styles;
+
+  width: 100%;
+  max-width: 100%;
+
+  .optimal-type-text {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+
+    z-index: $zindex-styles;
+    background: $color-bg-stickybox;
+
+    @include theme-flat;
+
+    .optimal-content {
+      background-color: inherit;
+      max-width: 100%;
+      margin: 0;
+      padding: 1em;
+      flex: auto;     // Expand to fill remaining space
+    }
+
+    .optimal-callout {
+      max-width: 100%;
+      margin: 0;
+      padding: 1em;
+      flex: initial;  // Use the initial width of this item - does not expend
+
+      // Hide Ads on mobile
+      @media (max-width: $breakpoint-mobile) {
+        display: none;
+      }
+    }
+
+    .optimal-fixedfooter-hide {
+      cursor: pointer;
+      color: $color-link;
+      padding: 1em;
+      flex: initial;  // Use the initial width of this item - does not expend
+      margin: auto 0;
+
+      // Make the close button - button-like
+      span {
+        padding: 0.25em;
+        font-size: 0.8em;
+        font-weight: bold;
+        border: 0.15em solid $color-link;
+        border-radius: 0.5em;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  &.dark {
+    .optimal-type-text {
+      background: $color-bg-dark-stickybox;
+
+      .optimal-fixedfooter-hide span {
+        color: $color-link-dark;
+        border-color: $color-link-dark;
+      }
+    }
+  }
+
+  &.adaptive {
+    @media (prefers-color-scheme: dark) {
+      .optimal-type-text {
+        background: $color-bg-dark-stickybox;
+
+        .optimal-fixedfooter-hide span {
+          color: $color-link-dark;
+          border-color: $color-link-dark;
+        }
+      }
+    }
+  }
+}
+
+.optimal-content {
+	background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+	background-size: 400% 400%;
+	animation: gradient 3s ease infinite;
+	// height: 100vh;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}

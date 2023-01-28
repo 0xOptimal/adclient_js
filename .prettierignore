@@ -1,0 +1,4 @@
+/dist/*
+/docs/build/
+/docs/_build/
+/docs/_static/optimalads.js
