@@ -472,6 +472,44 @@ class Placement {
     });
   }
 
+  /* Get an optimal ad from the decision API 
+   *
+   * Calls {callback} with {err, data}. If err is null = success. Data can also be null, indicating a noop action.
+   */
+  get_optimal_ad(placement, callback, render_html=true) {
+    let params = {
+      publisher: placement.publisher,
+      ad_types: placement.ad_type,
+      div_ids: placement.target,
+      keywords: placement.keywords.join("|"),
+      campaign_types: placement.campaign_types.join("|"),
+      client_version: AD_CLIENT_VERSION,
+      wallets: placement.viewer_data.wallets.join("|"),
+      // location.href includes query params (possibly sensitive) and fragments (unnecessary)
+      url: (window.location.origin + window.location.pathname).slice(0, 256),
+    };
+    if (placement.force_ad) {
+      params["force_ad"] = placement.force_ad;
+    }
+    if (placement.force_campaign) {
+      params["force_campaign"] = placement.force_campaign;
+    }
+    const url_params = new URLSearchParams(params);
+    const url = new URL(AD_DECISION_URL + "?" + url_params.toString());
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+
+    xhr.onload = function () {
+      callback(null, xhr.response);
+    };
+
+    xhr.onerror = function () {
+      callback(xhr.response);
+    };
+    xhr.send();
+  }
+
   /* Detect whether this ad is "uplifted" meaning allowed by ABP's Acceptable Ads list
    *
    * Calls the provided callback passing a boolean whether this ad is uplifted.
