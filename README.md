@@ -51,6 +51,8 @@ This data is then relayed to the backend server automatically.
 
 ## Advanced usage
 
+>See an example of advanced usage in the `test.html` file.
+
 You can directly call `get_optimal_ad(placement, callback)` and pass a Placement object and a `callback(err, data)` function. The callback will receive the error if any and the data as a JSON object if not. 
 
 You can create the Placement object from an element that will display the ad, e.g.
