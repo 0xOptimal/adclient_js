@@ -188,8 +188,8 @@ const AD_CLIENT_VERSION = "1.6.2";  // Sent with the ad request
 
 
 // For local testing, set this
-const AD_DECISION_URL = "http://localhost:8000/api/v1/decision/";
-// const AD_DECISION_URL = "https://i.useoptimal.xyz/api/v1/decision/";
+// const AD_DECISION_URL = "http://localhost:8000/api/v1/decision/";
+const AD_DECISION_URL = "https://i.useoptimal.xyz/api/v1/decision/";
 const AD_TYPES_VERSION = 1;  // Used with the ad type slugs
 const ATTR_PREFIX = "optimal-";
 const ABP_DETECTION_PX = "https://media.ethicalads.io/abp/px.gif";
