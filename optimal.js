@@ -188,8 +188,8 @@ const AD_CLIENT_VERSION = "1.6.2";  // Sent with the ad request
 
 
 // For local testing, set this
-// const AD_DECISION_URL = "http://ethicaladserver:5000/api/v1/decision/";
-const AD_DECISION_URL = "https://i.useoptimal.xyz/api/v1/decision/";
+const AD_DECISION_URL = "http://localhost:8000/api/v1/decision/";
+// const AD_DECISION_URL = "https://i.useoptimal.xyz/api/v1/decision/";
 const AD_TYPES_VERSION = 1;  // Used with the ad type slugs
 const ATTR_PREFIX = "optimal-";
 const ABP_DETECTION_PX = "https://media.ethicalads.io/abp/px.gif";
@@ -471,45 +471,7 @@ class Placement {
       document.getElementsByTagName("head")[0].appendChild(script);
     });
   }
-
-  /* Get an optimal ad from the decision API 
-   *
-   * Calls {callback} with {err, data}. If err is null = success. Data can also be null, indicating a noop action.
-   */
-  get_optimal_ad(placement, callback, render_html=true) {
-    let params = {
-      publisher: placement.publisher,
-      ad_types: placement.ad_type,
-      div_ids: placement.target,
-      keywords: placement.keywords.join("|"),
-      campaign_types: placement.campaign_types.join("|"),
-      client_version: AD_CLIENT_VERSION,
-      wallets: placement.viewer_data.wallets.join("|"),
-      // location.href includes query params (possibly sensitive) and fragments (unnecessary)
-      url: (window.location.origin + window.location.pathname).slice(0, 256),
-    };
-    if (placement.force_ad) {
-      params["force_ad"] = placement.force_ad;
-    }
-    if (placement.force_campaign) {
-      params["force_campaign"] = placement.force_campaign;
-    }
-    const url_params = new URLSearchParams(params);
-    const url = new URL(AD_DECISION_URL + "?" + url_params.toString());
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-
-    xhr.onload = function () {
-      callback(null, xhr.response);
-    };
-
-    xhr.onerror = function () {
-      callback(xhr.response);
-    };
-    xhr.send();
-  }
-
+ 
   /* Detect whether this ad is "uplifted" meaning allowed by ABP's Acceptable Ads list
    *
    * Calls the provided callback passing a boolean whether this ad is uplifted.
@@ -629,6 +591,45 @@ function check_dependencies() {
   }
 
   return true;
+}
+
+ /* Get an optimal ad from the decision API 
+   *
+   * Calls {callback} with {err, data}. If err is null = success. Data can also be null, indicating a noop action.
+   */
+function get_optimal_ad(placement, callback, render_html=true) {
+  let params = {
+    publisher: placement.publisher,
+    ad_types: placement.ad_type,
+    div_ids: placement.target,
+    keywords: placement.keywords.join("|"),
+    campaign_types: placement.campaign_types.join("|"),
+    client_version: AD_CLIENT_VERSION,
+    wallets: placement.viewer_data.wallets.join("|"),
+    // location.href includes query params (possibly sensitive) and fragments (unnecessary)
+    url: (window.location.origin + window.location.pathname).slice(0, 256),
+  };
+  if (placement.force_ad) {
+    params["force_ad"] = placement.force_ad;
+  }
+  if (placement.force_campaign) {
+    params["force_campaign"] = placement.force_campaign;
+  }
+  const url_params = new URLSearchParams(params);
+  const url = new URL(AD_DECISION_URL + "?" + url_params.toString());
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+
+  xhr.onload = function () {
+    let data = JSON.parse(xhr.response);
+    callback(null, data);
+  };
+
+  xhr.onerror = function () {
+    callback(xhr.response);
+  };
+  xhr.send();
 }
 
 /* Find all placement DOM elements and hot load HTML as child nodes

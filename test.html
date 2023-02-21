@@ -1,0 +1,37 @@
+<html>
+<head>
+    <script src="optimal.js"></script>
+</head>
+
+<body>
+    <div id="test"></div>
+    <script>
+        var placement= new Placement(
+            publisher="test-publisher", // your-publisher-slug
+            ad_type="image-banner", 
+            target="ad", 
+            options={}, 
+            viewer_data={wallets:["1:0x31AC3823d91A7B66CE0F4087d9a1D4A76300fA72"]}, 
+        )
+
+        get_optimal_ad(placement, function (err, data){
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(data)
+                document.getElementById('ad1').innerHTML = data.html
+
+                ad2 = document.getElementById('ad2');
+                ad2.innerHTML = `<img src="${data.image}"></img><h1>${data.copy.headline}</h1><p>${data.copy.content}</p><a href="${data.link}">${data.copy.cta}</a>`;
+            }
+        });
+    </script>
+
+    <h1>Optimal Ads</h1>
+    <h2>The first div directly injects the received HTML</h2>
+    <div id="ad1"></div>
+    <h2>The second div customises the content presentation</h2>
+    <div id="ad2"></div>
+</body>
+
+</html>
